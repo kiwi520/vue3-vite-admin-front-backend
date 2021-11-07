@@ -23,7 +23,12 @@ func (d departmentRepository) DepartmentSearchList(search dto.DepartmentSearchPa
 
 
 	//departDb:= d.departConnection.Model(&entity.Department{}).Select("").Where(&entity.Department{DepartmentName: search.DepartmentName})
-	departDb:= d.departConnection.Table("departments as d").Select("d.id,d.department_name,d.department_leader_id,d.parent_id,d.created_at,d.updated_at, ( select u.name  from users as u where u.id=d.department_leader_id) as leader_name, ( select u.email  from users as u where u.id=d.department_leader_id) as leader_email ").Omit("DeletedAt").Where(&entity.Department{DepartmentName: search.DepartmentName})
+	departDb:= d.departConnection.Table("departments as d").Select("d.id,d.department_name,d.department_leader_id,d.parent_id,d.created_at,d.updated_at, ( select u.name  from users as u where u.id=d.department_leader_id) as leader_name, ( select u.email  from users as u where u.id=d.department_leader_id) as leader_email ").Omit("DeletedAt")
+
+	if search.DepartmentName != "" {
+		departDb.Where("d.department_name LIKE ? ", "%"+search.DepartmentName+"%")
+	}
+
 	var count int64
 	departDb.Count(&count)
 

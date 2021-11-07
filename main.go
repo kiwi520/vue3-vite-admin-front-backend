@@ -16,17 +16,23 @@ var (
 	userRepository respository.UserRepository = respository.NewUserRepository(db)
 	bookRepository respository.BookRepository = respository.NewBookRepository(db)
 	departmetRepository respository.DepartmentRepository = respository.NewDepartmentRepository(db)
+	roleRepository respository.RoleRepository = respository.NewRoleRepository(db)
+	adminRepository respository.AdminRepository = respository.NewAdminRepository(db)
 
 	jwtService service.JwtService = service.NewJwtService()
 	bookService service.BookService = service.NewBookService(bookRepository)
 	authService service.AuthService = service.NewAuthService(userRepository)
 	userService service.UserService = service.NewUserService(userRepository)
 	departmentService service.DepartmentService = service.NewDepartmentService(departmetRepository)
+	roleService service.RoleService = service.NewRoleService(roleRepository)
+	adminService service.AdminService = service.NewAdminService(adminRepository)
 
 	authController constroller.AuthController = constroller.NewAuthController(authService,jwtService)
 	userController constroller.UserController = constroller.NewUserController(userService,jwtService)
 	bookController constroller.BookController = constroller.NewBookController(bookService,jwtService)
 	departmentController constroller.DepartmentController = constroller.NewDepartmentController(departmentService,jwtService)
+	roleController constroller.RoleController = constroller.NewRoleController(jwtService,roleService)
+	adminController constroller.AdminController = constroller.NewAdminService(jwtService,adminService)
 )
 
 func main()  {
@@ -73,6 +79,7 @@ func main()  {
 		bookRoutes.PUT("/",bookController.Update)
 		bookRoutes.DELETE("/:id",bookController.Delete)
 	}
+
 	departmentRoutes := r.Group("api/department",middleware.AuthorizeJwt(jwtService))
 	{
 		departmentRoutes.POST("/list", departmentController.List)
@@ -81,6 +88,24 @@ func main()  {
 		departmentRoutes.GET("/:id", departmentController.FindByID)
 		departmentRoutes.PUT("/", departmentController.Update)
 		departmentRoutes.DELETE("/", departmentController.Delete)
+	}
+
+	roleRoutes := r.Group("api/role",middleware.AuthorizeJwt(jwtService))
+	{
+		roleRoutes.POST("/list", roleController.List)
+		roleRoutes.POST("/", roleController.Insert)
+		//roleRoutes.GET("/:id", roleController.FindByID)
+		roleRoutes.PUT("/", roleController.Update)
+		roleRoutes.DELETE("/", departmentController.Delete)
+	}
+
+	adminRoutes := r.Group("api/admin",middleware.AuthorizeJwt(jwtService))
+	{
+		adminRoutes.POST("/list", adminController.List)
+		adminRoutes.POST("/", adminController.Insert)
+		//roleRoutes.GET("/:id", roleController.FindByID)
+		adminRoutes.PUT("/", adminController.Update)
+		adminRoutes.DELETE("/", adminController.Delete)
 	}
 
 
