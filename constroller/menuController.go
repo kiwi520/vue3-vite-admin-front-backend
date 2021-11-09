@@ -10,79 +10,86 @@ import (
 	"strconv"
 )
 
-type RoleController interface {
+type MenuController interface {
 	Insert(ctx *gin.Context)
 	FindByID(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	List(ctx *gin.Context)
-	AllList(ctx *gin.Context)
+	GetMenuTreeList(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 }
-
-type roleController struct {
+type menuController struct {
 	jwtService service.JwtService
-	roleService service.RoleService
+	menuService service.MenuService
 }
 
-func (r roleController) AllList(ctx *gin.Context) {
-	var roletList []entity.Role = r.roleService.AllList()
+func (m menuController) GetMenuTreeList(ctx *gin.Context) {
+	pid, errDTO := strconv.ParseUint(ctx.DefaultQuery("pid", "0"), 0, 0)
 
-	res := helper.BuildResponse(http.StatusOK, "获取成功", roletList)
-	ctx.JSON(http.StatusOK, res)
-}
-
-func (r roleController) Insert(ctx *gin.Context) {
-	var roleCreateDTo dto.RoleInsertDTO
-	errDTO := ctx.ShouldBind(&roleCreateDTo)
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("请求参数有误", errDTO)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	} else {
-		result := r.roleService.Insert(roleCreateDTo)
+		var deptList []dto.MenuTree = m.menuService.GetMenuTreeList(uint(pid))
+
+		res := helper.BuildResponse(http.StatusOK, "获取成功", deptList)
+		ctx.JSON(http.StatusOK, res)
+	}
+}
+
+func (m menuController) Insert(ctx *gin.Context) {
+	var menuCreateDTo dto.MenuCreteDTO
+	errDTO := ctx.ShouldBind(&menuCreateDTo)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("请求参数有误", errDTO)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	} else {
+		result := m.menuService.Insert(menuCreateDTo)
 		res := helper.BuildResponse(http.StatusOK, "添加成功", result)
 		ctx.JSON(http.StatusOK, res)
 	}
 }
 
-func (r roleController) FindByID(ctx *gin.Context) {
+func (m menuController) FindByID(ctx *gin.Context) {
 	panic("implement me")
 }
 
-func (r roleController) Update(ctx *gin.Context) {
-	var roleUpdateDTO dto.RoleUpdateDTO
-	errDTO := ctx.ShouldBind(&roleUpdateDTO)
+func (m menuController) Update(ctx *gin.Context) {
+	var menuUpdateDTO dto.MenuUpdateDTO
+	errDTO := ctx.ShouldBind(&menuUpdateDTO)
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("请求参数有误", errDTO)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}
 
-	result := r.roleService.Update(roleUpdateDTO)
+	result := m.menuService.Update(menuUpdateDTO)
 
 	res := helper.BuildResponse(http.StatusOK, "修改成功", result)
 	ctx.JSON(http.StatusOK, res)
 	return
 }
 
-func (r roleController) List(ctx *gin.Context) {
-	var RoleSearchParam dto.RoleSearchParam
-	errDTO := ctx.ShouldBind(&RoleSearchParam)
+func (m menuController) List(ctx *gin.Context) {
+	var menuSearchParam dto.MenuSearchParam
+	errDTO := ctx.ShouldBind(&menuSearchParam)
 
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("请求参数有误", errDTO)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	} else {
-		data := r.roleService.List(RoleSearchParam)
+		data := m.menuService.List(menuSearchParam)
 
 		res := helper.BuildResponse(http.StatusOK, "获取成功", data)
 		ctx.JSON(http.StatusOK, res)
 	}
 }
 
-func (r roleController) Delete(ctx *gin.Context) {
-	var Role entity.Role
+func (m menuController) Delete(ctx *gin.Context) {
+	var Menu entity.Menu
 	id, errDTO := strconv.ParseUint(ctx.DefaultQuery("id", "0"), 0, 0)
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("请求参数有误", errDTO)
@@ -90,20 +97,16 @@ func (r roleController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	Role.ID = uint(id)
-
-	println("Role")
-	println(Role.ID)
-	println("Role")
-	r.roleService.Delete(Role)
+	Menu.ID = uint(id)
+	m.menuService.Delete(Menu)
 	res := helper.BuildResponse(http.StatusOK, "删除成功", []string{})
 	ctx.JSON(http.StatusOK, res)
 	return
 }
 
-func NewRoleController(	jwtService service.JwtService,roleService service.RoleService) RoleController {
-	return &roleController{
+func NewMenuController(jwtService service.JwtService,menuService service.MenuService) MenuController {
+	return &menuController{
 		jwtService: jwtService,
-		roleService: roleService,
+		menuService: menuService,
 	}
 }

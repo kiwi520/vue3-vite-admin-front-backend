@@ -51,10 +51,6 @@ func (a adminRepository) AdminSearchList(search dto.AdminSearchParam) (data dto.
 		departDb.Where("name LIKE ? ", "%"+search.Name+"%")
 	}
 
-	if search.ID > 0 {
-		departDb.Where("id = ? ",search.ID)
-	}
-
 	if search.State > 0  {
 		departDb.Where("state = ? ",search.State)
 	}

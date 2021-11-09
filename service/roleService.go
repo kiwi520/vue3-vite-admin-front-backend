@@ -12,11 +12,16 @@ type RoleService interface {
 	Delete(role entity.Role)
 	List(search dto.RoleSearchParam) dto.RoleSearchList
 	//GetDepartmentTreeList(pid uint) []dto.Role
+	AllList() []entity.Role
 	FindById(roleID uint) entity.Role
 }
 
 type roleService struct {
   respository.RoleRepository
+}
+
+func (r roleService) AllList() []entity.Role {
+	return r.RoleRepository.RoleList()
 }
 
 func (r roleService) Insert(role dto.RoleInsertDTO) entity.Role {

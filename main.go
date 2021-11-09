@@ -18,6 +18,7 @@ var (
 	departmetRepository respository.DepartmentRepository = respository.NewDepartmentRepository(db)
 	roleRepository respository.RoleRepository = respository.NewRoleRepository(db)
 	adminRepository respository.AdminRepository = respository.NewAdminRepository(db)
+	menuRepository respository.MenuRepository = respository.NewMenuRepository(db)
 
 	jwtService service.JwtService = service.NewJwtService()
 	bookService service.BookService = service.NewBookService(bookRepository)
@@ -26,6 +27,7 @@ var (
 	departmentService service.DepartmentService = service.NewDepartmentService(departmetRepository)
 	roleService service.RoleService = service.NewRoleService(roleRepository)
 	adminService service.AdminService = service.NewAdminService(adminRepository)
+	menuService service.MenuService = service.NewMenuService(menuRepository)
 
 	authController constroller.AuthController = constroller.NewAuthController(authService,jwtService)
 	userController constroller.UserController = constroller.NewUserController(userService,jwtService)
@@ -33,6 +35,7 @@ var (
 	departmentController constroller.DepartmentController = constroller.NewDepartmentController(departmentService,jwtService)
 	roleController constroller.RoleController = constroller.NewRoleController(jwtService,roleService)
 	adminController constroller.AdminController = constroller.NewAdminService(jwtService,adminService)
+	menuController constroller.MenuController = constroller.NewMenuController(jwtService,menuService)
 )
 
 func main()  {
@@ -96,16 +99,28 @@ func main()  {
 		roleRoutes.POST("/", roleController.Insert)
 		//roleRoutes.GET("/:id", roleController.FindByID)
 		roleRoutes.PUT("/", roleController.Update)
-		roleRoutes.DELETE("/", departmentController.Delete)
+		roleRoutes.DELETE("/", roleController.Delete)
 	}
 
 	adminRoutes := r.Group("api/admin",middleware.AuthorizeJwt(jwtService))
 	{
 		adminRoutes.POST("/list", adminController.List)
 		adminRoutes.POST("/", adminController.Insert)
+		roleRoutes.GET("/all", roleController.AllList)
 		//roleRoutes.GET("/:id", roleController.FindByID)
 		adminRoutes.PUT("/", adminController.Update)
 		adminRoutes.DELETE("/", adminController.Delete)
+	}
+
+
+	menuRoutes := r.Group("api/menu",middleware.AuthorizeJwt(jwtService))
+	{
+		menuRoutes.POST("/list", menuController.List)
+		menuRoutes.GET("/tree", menuController.GetMenuTreeList)
+		menuRoutes.POST("/", menuController.Insert)
+		//roleRoutes.GET("/:id", menuController.FindByID)
+		menuRoutes.PUT("/", menuController.Update)
+		menuRoutes.DELETE("/", menuController.Delete)
 	}
 
 

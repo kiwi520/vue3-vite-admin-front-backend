@@ -11,8 +11,8 @@ type RoleRepository interface {
 	UpdateRole(role entity.Role) entity.Role
 	DeleteRole(role entity.Role)
 	RoleSearchList(search dto.RoleSearchParam) dto.RoleSearchList
-	//DepartmentList() []entity.Role
-	FindRoleByID(departID uint) entity.Role
+	RoleList() []entity.Role
+	FindRoleByID(roleID uint) entity.Role
 }
 
 type roleRepository struct {
@@ -66,9 +66,10 @@ func (r roleRepository) RoleSearchList(search dto.RoleSearchParam) (data dto.Rol
 	return data
 }
 
-//func (r roleRepository) DepartmentList() []entity.Role {
-//	panic("implement me")
-//}
+func (r roleRepository) RoleList() (data []entity.Role) {
+	r.roleConnection.Find(&data)
+	return data
+}
 
 func (r roleRepository) FindRoleByID(departID uint) entity.Role {
 	panic("implement me")

@@ -19,12 +19,12 @@ type AdminCreateDTO struct {
 	Name string ` json:"name" binding:"required"`
 	Email string ` json:"email" binding:"required"`
 	Mobile string ` json:"mobile" binding:"required"`
-	Gender uint `json:"gender" binding:"required"`
+	Gender uint `json:"gender" binding:"required,oneof=1 0"`
 	DepartmentID uint `json:"department_id" binding:"required"`
 	RoleID uint `json:"role_id" binding:"required"`
-	State uint `json:"state" binding:"required"`
+	State uint `json:"state" binding:"required,oneof=1 2 3"`
 	Job string `json:"job"  binding:"required"`
-	Remark string `json:"remark" binding:"required" `
+	Remark string `json:"remark" binding:"min=0,max=255" `
 	Password string ` json:"password" binding:"required"`
 }
 
@@ -33,19 +33,18 @@ type AdminUpdateDTO struct {
 	Name string ` json:"name" binding:"required"`
 	Email string ` json:"email" binding:"required"`
 	Mobile string ` json:"mobile" binding:"required"`
-	Gender uint `json:"gender" binding:"required"`
+	Gender uint `json:"gender" binding:"required,oneof=1 0"`
 	DepartmentID uint `json:"department_id" binding:"required"`
 	RoleID uint `json:"role_id" binding:"required"`
 	State uint `json:"state" binding:"required"`
 	Job string `json:"job"  binding:"required"`
-	Remark string `json:"remark" binding:"required" `
+	Remark string `json:"remark" binding:"min=0,max=255" `
 }
 
 
 
 type AdminSearchParam struct {
 	Name string `json:"name"`
-	ID uint `json:"id"`
 	State uint `json:"state"`
 	PageIndex uint `json:"page_index" binding:"required"`
 	PageSize uint `json:"page_size" binding:"required"`
