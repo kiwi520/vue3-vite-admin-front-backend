@@ -13,6 +13,12 @@ type RoleUpdateDTO struct {
 	Remark   string `json:"remark" form:"remark" binding:"required"`
 }
 
+type RolePermissionUpdateDTO struct {
+	ID       uint64 `json:"id" form:"id" binding:"required"`
+	Permission string `json:"permission" binding:"min=0,max=2000"`
+	MenuJson string `json:"menu_json"  binding:"min=0,max=2000"`
+}
+
 type RoleSearchParam struct {
 	RoleName string `json:"role_name"`
 	PageIndex uint `json:"page_index" binding:"required"`
@@ -30,4 +36,5 @@ type Role struct {
 	gorm.Model
 	RoleName string `json:"role_name" gorm:"type:varchar(255);comment:'角色名'"`
 	Remark string `json:"remark"  gorm:"type:varchar(1000);comment:'备注'"`
+	Permission string `json:"permission" gorm:"type:varchar(2000);default:'';comment:'权限'"`
 }

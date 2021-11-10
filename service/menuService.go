@@ -3,6 +3,7 @@ package service
 import (
 	"golang_api/dto"
 	"golang_api/entity"
+	"golang_api/helper"
 	"golang_api/respository"
 )
 
@@ -22,7 +23,7 @@ type menuService struct {
 func (m menuService) GetMenuTreeList(pid uint) []dto.MenuTree {
 	list:= m.MenuRepository.MenuList()
 
-	return  getMenuTree(list,pid)
+	return  helper.GetMenuTree(list,pid)
 }
 
 func (m menuService) Insert(menu dto.MenuCreteDTO) entity.Menu {
@@ -74,22 +75,4 @@ func NewMenuService(repository respository.MenuRepository) MenuService {
 	return &menuService{
 		repository,
 	}
-}
-
-func getMenuTree(list []entity.Menu, pid uint) []dto.MenuTree {
-	var MenuTree []dto.MenuTree
-	for _,val := range list {
-		if val.ParentID == pid {
-			child := getMenuTree(list,val.ID)
-			node := dto.MenuTree {
-				ID: val.ID,
-				ParentID: val.ParentID,
-				Name: val.Name,
-			}
-			node.Children = child
-			MenuTree = append(MenuTree,node)
-		}
-	}
-
-	return  MenuTree
 }

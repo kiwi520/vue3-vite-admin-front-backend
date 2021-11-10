@@ -1,14 +1,19 @@
 package respository
 
 import (
+	"encoding/json"
+	"fmt"
 	"golang_api/dto"
 	"golang_api/entity"
+	"golang_api/helper"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type RoleRepository interface {
 	InsertRole(role entity.Role) entity.Role
 	UpdateRole(role entity.Role) entity.Role
+	SetPermission(permission dto.RolePermissionUpdateDTO) error
 	DeleteRole(role entity.Role)
 	RoleSearchList(search dto.RoleSearchParam) dto.RoleSearchList
 	RoleList() []entity.Role
@@ -17,6 +22,46 @@ type RoleRepository interface {
 
 type roleRepository struct {
 	roleConnection *gorm.DB
+}
+
+func (r roleRepository) SetPermission(permission dto.RolePermissionUpdateDTO) error {
+
+	var menuList = []entity.Menu{}
+
+	MenuJsonSlice:=strings.Split(permission.MenuJson,",")
+
+	r.roleConnection.Where("type = ? ",1).Where("id in ?",MenuJsonSlice).Find(&menuList)
+
+
+	menuTreeList:= helper.GetMenuTree(menuList,0)
+
+	fmt.Println("menuTreeList")
+	fmt.Println(menuTreeList)
+	fmt.Println("menuTreeList")
+	marshal, errs := json.Marshal(menuTreeList)
+	if errs != nil {
+		println(errs)
+		return errs
+	}
+	//fmt.Println("json:",string(marshal))
+	//dd:= []dto.MenuTree{}
+	//errs := json.Unmarshal([]byte(marshal),&dd)
+	//if errs != nil {
+	//	return errs
+	//}
+	//
+	//fmt.Println("dd")
+	//fmt.Println(dd)
+	//fmt.Println("dd")
+	//return errors.New("")
+	var role = entity.Role{}
+	role.ID = uint(permission.ID)
+	err:= r.roleConnection.Model(&role).UpdateColumns(entity.Role{
+		Permission: permission.Permission,
+		MenuJson: string(marshal),
+	}).Error
+
+	return err
 }
 
 func (r roleRepository) InsertRole(role entity.Role) entity.Role {
@@ -31,7 +76,7 @@ func (r roleRepository) UpdateRole(role entity.Role) entity.Role {
 	println(role.RoleName)
 	println(role.Remark)
 	println("role")
-	err := r.roleConnection.Model(&role).Select("*").Omit("id", "CreatedAt").Updates(map[string]interface{}{"role_name": role.RoleName, "remark": role.Remark}).Error
+	err := r.roleConnection.Model(&role).Select("*").Omit("id", "permission","menu_json","CreatedAt").Updates(map[string]interface{}{"role_name": role.RoleName, "remark": role.Remark}).Error
 
 	if err != nil{
 		println("err.Error()")

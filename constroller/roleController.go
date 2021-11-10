@@ -14,6 +14,7 @@ type RoleController interface {
 	Insert(ctx *gin.Context)
 	FindByID(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	SetPermission(ctx *gin.Context)
 	List(ctx *gin.Context)
 	AllList(ctx *gin.Context)
 	Delete(ctx *gin.Context)
@@ -59,6 +60,22 @@ func (r roleController) Update(ctx *gin.Context) {
 	}
 
 	result := r.roleService.Update(roleUpdateDTO)
+
+	res := helper.BuildResponse(http.StatusOK, "修改成功", result)
+	ctx.JSON(http.StatusOK, res)
+	return
+}
+
+func (r roleController) SetPermission(ctx *gin.Context) {
+	var rolePermissionUpdateDTO dto.RolePermissionUpdateDTO
+	errDTO := ctx.ShouldBind(&rolePermissionUpdateDTO)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("请求参数有误", errDTO)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	result := r.roleService.SetPermission(rolePermissionUpdateDTO)
 
 	res := helper.BuildResponse(http.StatusOK, "修改成功", result)
 	ctx.JSON(http.StatusOK, res)

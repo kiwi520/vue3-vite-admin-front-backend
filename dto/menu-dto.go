@@ -6,7 +6,7 @@ type MenuCreteDTO struct {
 	Type uint `json:"type" binding:"required"`
 	Name string `json:"name" binding:"required"`
 	Code string `json:"code" binding:"min=0,max=155"`
-	Path string `json:"path" binding:"min=5,max=255"`
+	Path string `json:"path" binding:"min=0,max=255"`
 	Icon string `json:"icon" binding:"min=0,max=255"`
 	Component string `json:"component" binding:"min=0,max=255"`
 	State uint `json:"state" binding:"required,oneof=1 2 "`
@@ -18,7 +18,7 @@ type MenuUpdateDTO struct {
 	Type uint `json:"type" binding:"required"`
 	Name string `json:"name" binding:"required"`
 	Code string `json:"code" binding:"min=0,max=155"`
-	Path string `json:"path" binding:"min=5,max=255"`
+	Path string `json:"path" binding:"min=0,max=255"`
 	Icon string `json:"icon" binding:"min=0,max=255"`
 	Component string `json:"component" binding:"min=0,max=255"`
 	State uint `json:"state" binding:"required,oneof=1 2 "`

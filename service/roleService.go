@@ -9,7 +9,9 @@ import (
 type RoleService interface {
 	Insert(role dto.RoleInsertDTO) entity.Role
 	Update(role dto.RoleUpdateDTO) entity.Role
+	SetPermission(permission dto.RolePermissionUpdateDTO) error
 	Delete(role entity.Role)
+
 	List(search dto.RoleSearchParam) dto.RoleSearchList
 	//GetDepartmentTreeList(pid uint) []dto.Role
 	AllList() []entity.Role
@@ -43,6 +45,9 @@ func (r roleService) Update(role dto.RoleUpdateDTO) entity.Role {
 
 	res := r.RoleRepository.UpdateRole(roleToUpdate)
 	return res
+}
+func (r roleService) SetPermission(permission dto.RolePermissionUpdateDTO) error {
+	return r.RoleRepository.SetPermission(permission)
 }
 
 func (r roleService) Delete(role entity.Role) {

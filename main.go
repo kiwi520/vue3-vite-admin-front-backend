@@ -99,6 +99,7 @@ func main()  {
 		roleRoutes.POST("/", roleController.Insert)
 		//roleRoutes.GET("/:id", roleController.FindByID)
 		roleRoutes.PUT("/", roleController.Update)
+		roleRoutes.PUT("/setPermission", roleController.SetPermission)
 		roleRoutes.DELETE("/", roleController.Delete)
 	}
 
