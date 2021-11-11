@@ -70,3 +70,14 @@ type Admin struct {
 	Remark string `json:"remark" gorm:"type:varchar(255)" `
 	Password string `gorm:"->;<-;not null" json:"-"`
 }
+
+type UserPermission struct {
+	MenuJson string `json:"menu_json" gorm:"type:text;comment:'菜单列表'"`
+	ButtonString string `json:"button_string" gorm:"type:varchar(1000);default:'';comment:'按钮权限列表'"`
+}
+
+type UserPermissionResponse struct {
+	ButtonString string `json:"button_string"`
+	MenuTreeList []MenuTree `json:"menu_tree_list"`
+}
+

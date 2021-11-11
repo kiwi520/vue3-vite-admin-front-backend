@@ -1,10 +1,14 @@
 package respository
 
 import (
+	"encoding/json"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"golang_api/dto"
 	"golang_api/entity"
 	"gorm.io/gorm"
 	"log"
+	"strings"
 )
 
 
@@ -17,11 +21,48 @@ type UserRepository interface {
 	FindByEmail(email string) entity.User
 	ProfileUser(userID string) entity.User
 	UserList() []entity.User
+	GetUserPermission(userID int64) dto.UserPermissionResponse
+	GetUserButtonList(userID int64) []string
 }
 
 type userConnection struct {
 	connection *gorm.DB
 
+}
+
+func (u userConnection) GetUserButtonList(userID int64) []string {
+	var button string
+	err := u.connection.Table("users as u").Select("r.permission").Joins("left join roles as r on u.role_id = r.id ").Joins("left join roles as r on u.role_id = r.id ").Where("u.id",userID).Find(&button).Error
+	if err != nil{
+		panic(err)
+	}
+
+	buttonList := strings.Split(button,",")
+
+	fmt.Println("buttonList")
+	fmt.Println(buttonList)
+	fmt.Println("buttonList")
+
+	return nil
+}
+
+func (u userConnection) GetUserPermission(userID int64) (data dto.UserPermissionResponse) {
+	var userPermission dto.UserPermission
+	err := u.connection.Table("users as u").Select("r.menu_json,r.button_string").Joins("left join roles as r on u.role_id = r.id ").Where("u.id",userID).Find(&userPermission).Error
+	if err != nil{
+		panic(err)
+	}
+
+	var menuList []dto.MenuTree
+
+	errs := json.Unmarshal([]byte(userPermission.MenuJson),&menuList)
+	if errs != nil {
+		panic(errs)
+	}
+	data.MenuTreeList = menuList
+	data.ButtonString = userPermission.ButtonString
+
+	return data
 }
 
 func (u userConnection) UserList() []entity.User {

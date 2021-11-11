@@ -2,7 +2,6 @@ package respository
 
 import (
 	"encoding/json"
-	"fmt"
 	"golang_api/dto"
 	"golang_api/entity"
 	"golang_api/helper"
@@ -26,18 +25,28 @@ type roleRepository struct {
 
 func (r roleRepository) SetPermission(permission dto.RolePermissionUpdateDTO) error {
 
-	var menuList = []entity.Menu{}
+	var permissionList = []entity.Menu{}
 
 	MenuJsonSlice:=strings.Split(permission.MenuJson,",")
 
-	r.roleConnection.Where("type = ? ",1).Where("id in ?",MenuJsonSlice).Find(&menuList)
+	//r.roleConnection.Where("type = ? ",1).Where("id in ?",MenuJsonSlice).Find(&menuList)
+	r.roleConnection.Where("id in ?",MenuJsonSlice).Find(&permissionList)
 
+	var buttonList = []string{}
+	var menuList = []entity.Menu{}
+
+	if len(permissionList) > 0 {
+		for _,item := range permissionList{
+			if item.Type == 1 {
+				menuList = append(menuList,item)
+			}else if item.Type == 2 {
+				buttonList = append(buttonList,item.Code)
+			}
+		}
+	}
 
 	menuTreeList:= helper.GetMenuTree(menuList,0)
 
-	fmt.Println("menuTreeList")
-	fmt.Println(menuTreeList)
-	fmt.Println("menuTreeList")
 	marshal, errs := json.Marshal(menuTreeList)
 	if errs != nil {
 		println(errs)
@@ -59,6 +68,7 @@ func (r roleRepository) SetPermission(permission dto.RolePermissionUpdateDTO) er
 	err:= r.roleConnection.Model(&role).UpdateColumns(entity.Role{
 		Permission: permission.Permission,
 		MenuJson: string(marshal),
+		ButtonString: strings.Join(buttonList, ","),
 	}).Error
 
 	return err

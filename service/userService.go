@@ -10,10 +10,20 @@ type UserService interface {
 	Update(user dto.UserUpdateDTO) entity.User
 	Profile(userID string) entity.User
 	List() []entity.User
+	GetUserPermission(userID int64) dto.UserPermissionResponse
+	GetUserButtonList(userID int64) []string
 }
 
 type userService struct {
 	userRepository respository.UserRepository
+}
+
+func (u userService) GetUserButtonList(userID int64) []string {
+	return u.userRepository.GetUserButtonList(userID)
+}
+
+func (u userService) GetUserPermission(userID int64) dto.UserPermissionResponse {
+	return u.userRepository.GetUserPermission(userID)
 }
 
 func (u userService) List() []entity.User {

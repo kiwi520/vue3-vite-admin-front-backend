@@ -43,9 +43,13 @@ func GetMenuTree(list []entity.Menu, pid uint) []dto.MenuTree {
 		if val.ParentID == pid {
 			child := GetMenuTree(list,val.ID)
 			node := dto.MenuTree {
-				ID: val.ID,
-				ParentID: val.ParentID,
-				Name: val.Name,
+				ID:        val.ID,
+				ParentID:  val.ParentID,
+				Type: string(val.Type),
+				Name:      val.Name,
+				Icon:      val.Icon,
+				Path:      val.Path,
+				Component: val.Component,
 			}
 			node.Children = child
 			MenuTree = append(MenuTree,node)

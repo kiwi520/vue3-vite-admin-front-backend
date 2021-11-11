@@ -29,6 +29,10 @@ type MenuTree struct {
 	ID uint `json:"id"`
 	ParentID uint `json:"parent_id"`
 	Name string `json:"name"`
+	Type string `json:"type"`
+	Path string `json:"path"`
+	Icon string `json:"icon"`
+	Component string `json:"component"`
 	Children []MenuTree `json:"children"`
 }
 

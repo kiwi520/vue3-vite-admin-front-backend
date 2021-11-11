@@ -72,6 +72,8 @@ func main()  {
 		userRoutes.GET("/profile",userController.Profile)
 		userRoutes.GET("/list",userController.List)
 		userRoutes.POST("/update",userController.Update)
+		userRoutes.GET("/permission",userController.GetUserPermission)
+		userRoutes.GET("/button",userController.GetUserButtonList)
 	}
 
 	bookRoutes := r.Group("api/book",middleware.AuthorizeJwt(jwtService))

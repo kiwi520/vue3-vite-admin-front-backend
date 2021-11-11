@@ -37,7 +37,7 @@ func (m menuRepository) UpdateMenu(menu entity.Menu) entity.Menu {
 	println(menu.Type)
 	println(menu.Name)
 	println("role")
-	err := m.menuConnect.Model(&menu).Select("*").Omit("id", "CreatedAt").Updates(map[string]interface{}{"type": menu.Type, "name": menu.Name, "code": menu.Code, "path": menu.Path, "component": menu.Component, "state": menu.State, "parent_id": menu.ParentID}).Error
+	err := m.menuConnect.Model(&menu).Select("*").Omit("id", "CreatedAt").Updates(map[string]interface{}{"type": menu.Type, "name": menu.Name, "code": menu.Code, "path": menu.Path,"icon": menu.Icon, "component": menu.Component, "state": menu.State, "parent_id": menu.ParentID}).Error
 
 	if err != nil{
 		println("err.Error()")
