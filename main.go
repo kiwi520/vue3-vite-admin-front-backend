@@ -6,19 +6,20 @@ import (
 	"golang_api/config"
 	"golang_api/constroller"
 	"golang_api/middleware"
-	"golang_api/respository"
+	"golang_api/repository"
 	"golang_api/service"
 	"gorm.io/gorm"
 )
 
 var (
-	db * gorm.DB = config.SetupDatabaseConnection()
-	userRepository respository.UserRepository = respository.NewUserRepository(db)
-	bookRepository respository.BookRepository = respository.NewBookRepository(db)
-	departmetRepository respository.DepartmentRepository = respository.NewDepartmentRepository(db)
-	roleRepository respository.RoleRepository = respository.NewRoleRepository(db)
-	adminRepository respository.AdminRepository = respository.NewAdminRepository(db)
-	menuRepository respository.MenuRepository = respository.NewMenuRepository(db)
+	db                  * gorm.DB                       = config.SetupDatabaseConnection()
+	userRepository      repository.UserRepository       = repository.NewUserRepository(db)
+	bookRepository      repository.BookRepository       = repository.NewBookRepository(db)
+	departmetRepository repository.DepartmentRepository = repository.NewDepartmentRepository(db)
+	roleRepository      repository.RoleRepository       = repository.NewRoleRepository(db)
+	adminRepository     repository.AdminRepository      = repository.NewAdminRepository(db)
+	menuRepository      repository.MenuRepository       = repository.NewMenuRepository(db)
+	appVersionRepository repository.AppVersionRepository = repository.NewAppVersionRepository(db)
 
 	jwtService service.JwtService = service.NewJwtService()
 	bookService service.BookService = service.NewBookService(bookRepository)
@@ -28,6 +29,7 @@ var (
 	roleService service.RoleService = service.NewRoleService(roleRepository)
 	adminService service.AdminService = service.NewAdminService(adminRepository)
 	menuService service.MenuService = service.NewMenuService(menuRepository)
+	appVersionService service.AppVersionService = service.NewAppVersionService(appVersionRepository)
 
 	authController constroller.AuthController = constroller.NewAuthController(authService,jwtService)
 	userController constroller.UserController = constroller.NewUserController(userService,jwtService)
@@ -36,6 +38,7 @@ var (
 	roleController constroller.RoleController = constroller.NewRoleController(jwtService,roleService)
 	adminController constroller.AdminController = constroller.NewAdminService(jwtService,adminService)
 	menuController constroller.MenuController = constroller.NewMenuController(jwtService,menuService)
+	appVersionController constroller.AppVersionController = constroller.NewAppVersionController(jwtService,appVersionService)
 )
 
 func main()  {
@@ -124,6 +127,15 @@ func main()  {
 		//roleRoutes.GET("/:id", menuController.FindByID)
 		menuRoutes.PUT("/", menuController.Update)
 		menuRoutes.DELETE("/", menuController.Delete)
+	}
+
+
+	appVersionRoutes := r.Group("api/appVersion",middleware.AuthorizeJwt(jwtService))
+	{
+		appVersionRoutes.POST("/list", appVersionController.SearchList)
+		appVersionRoutes.POST("/", appVersionController.Insert)
+		appVersionRoutes.PUT("/", appVersionController.Update)
+		appVersionRoutes.DELETE("/", roleController.Delete)
 	}
 
 

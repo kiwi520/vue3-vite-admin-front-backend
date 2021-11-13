@@ -1,11 +1,11 @@
-package respository
+package repository
 
 import (
-	"encoding/json"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"golang_api/dto"
 	"golang_api/entity"
+	"golang_api/helper"
 	"gorm.io/gorm"
 	"log"
 	"strings"
@@ -47,20 +47,36 @@ func (u userConnection) GetUserButtonList(userID int64) []string {
 }
 
 func (u userConnection) GetUserPermission(userID int64) (data dto.UserPermissionResponse) {
-	var userPermission dto.UserPermission
-	err := u.connection.Table("users as u").Select("r.menu_json,r.button_string").Joins("left join roles as r on u.role_id = r.id ").Where("u.id",userID).Find(&userPermission).Error
+	var userPermission string
+	//err := u.connection.Table("users as u").Select("r.menu_json,r.button_string").Joins("left join roles as r on u.role_id = r.id ").Where("u.id",userID).Find(&userPermission).Error
+	err := u.connection.Table("users as u").Select("r.permission").Joins("left join roles as r on u.role_id = r.id ").Where("u.id",userID).Find(&userPermission).Error
 	if err != nil{
 		panic(err)
 	}
 
-	var menuList []dto.MenuTree
+	var permissionList = []entity.Menu{}
 
-	errs := json.Unmarshal([]byte(userPermission.MenuJson),&menuList)
-	if errs != nil {
-		panic(errs)
+	MenuJsonSlice:=strings.Split(userPermission,",")
+
+	u.connection.Where("id in ?",MenuJsonSlice).Find(&permissionList)
+
+	var buttonList = []string{}
+	var menuList = []entity.Menu{}
+
+	if len(permissionList) > 0 {
+		for _,item := range permissionList{
+			if item.Type == 1 {
+				menuList = append(menuList,item)
+			}else if item.Type == 2 {
+				buttonList = append(buttonList,item.Code)
+			}
+		}
 	}
-	data.MenuTreeList = menuList
-	data.ButtonString = userPermission.ButtonString
+
+	menuTreeList:= helper.GetMenuTree(menuList,0)
+
+	data.MenuTreeList = menuTreeList
+	data.ButtonString = strings.Join(buttonList, ",")
 
 	return data
 }

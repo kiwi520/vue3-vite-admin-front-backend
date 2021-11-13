@@ -3,7 +3,7 @@ package service
 import (
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 )
 
 type RoleService interface {
@@ -19,7 +19,7 @@ type RoleService interface {
 }
 
 type roleService struct {
-  respository.RoleRepository
+  repository.RoleRepository
 }
 
 func (r roleService) AllList() []entity.Role {
@@ -62,7 +62,7 @@ func (r roleService) FindById(roleID uint) entity.Role {
 	panic("implement me")
 }
 
-func NewRoleService(rep respository.RoleRepository) RoleService {
+func NewRoleService(rep repository.RoleRepository) RoleService {
 	return &roleService{
 		rep,
 	}

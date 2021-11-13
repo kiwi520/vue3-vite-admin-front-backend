@@ -3,7 +3,7 @@ package service
 import (
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 )
 
 type DepartmentService interface {
@@ -16,7 +16,7 @@ type DepartmentService interface {
 }
 
 type departmentService struct {
-	departmentRepository respository.DepartmentRepository
+	departmentRepository repository.DepartmentRepository
 }
 
 func (d departmentService) Insert(dept dto.DepartmentCreateDTO) entity.Department {
@@ -60,7 +60,7 @@ func (d departmentService) FindById(deptID uint) entity.Department {
 	return d.departmentRepository.FindDepartmentByID(deptID)
 }
 
-func NewDepartmentService(repository respository.DepartmentRepository) DepartmentService  {
+func NewDepartmentService(repository repository.DepartmentRepository) DepartmentService  {
 	return &departmentService{
 		departmentRepository: repository,
 	}

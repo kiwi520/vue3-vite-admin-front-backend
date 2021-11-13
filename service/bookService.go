@@ -4,7 +4,7 @@ import (
 	//"github.com/mashingan/smapping"
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 	//"log"
 )
 
@@ -18,7 +18,7 @@ type BookService interface {
 }
 
 type bookService struct {
-	bookRepository respository.BookRepository
+	bookRepository repository.BookRepository
 }
 
 func (b bookService) Insert(book dto.BookCreateDTO) entity.Book {
@@ -66,7 +66,7 @@ func (b bookService) IsAllowedToEdit(userId uint, bookID uint) bool {
 	return book.UserId == uint64(userId)
 }
 
-func NewBookService(bookRep respository.BookRepository) BookService {
+func NewBookService(bookRep repository.BookRepository) BookService {
 	return &bookService{
 		bookRepository: bookRep,
 	}

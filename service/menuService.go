@@ -4,7 +4,7 @@ import (
 	"golang_api/dto"
 	"golang_api/entity"
 	"golang_api/helper"
-	"golang_api/respository"
+	"golang_api/repository"
 )
 
 type MenuService interface {
@@ -17,7 +17,7 @@ type MenuService interface {
 }
 
 type menuService struct {
-	respository.MenuRepository
+	repository.MenuRepository
 }
 
 func (m menuService) GetMenuTreeList(pid uint) []dto.MenuTree {
@@ -71,7 +71,7 @@ func (m menuService) FindById(menuID uint) entity.Menu {
 	panic("implement me")
 }
 
-func NewMenuService(repository respository.MenuRepository) MenuService {
+func NewMenuService(repository repository.MenuRepository) MenuService {
 	return &menuService{
 		repository,
 	}

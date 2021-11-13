@@ -3,7 +3,7 @@ package service
 import (
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 )
 
 type AdminService interface {
@@ -14,7 +14,7 @@ type AdminService interface {
 }
 
 type adminService struct {
-	respository.AdminRepository
+	repository.AdminRepository
 }
 
 func (a adminService) Insert(admin dto.AdminCreateDTO) entity.User {
@@ -61,7 +61,7 @@ func (a adminService) List(search dto.AdminSearchParam) dto.AdminSearchList {
 	return  a.AdminRepository.AdminSearchList(search)
 }
 
-func NewAdminService (repository respository.AdminRepository) AdminService  {
+func NewAdminService (repository repository.AdminRepository) AdminService  {
 	return &adminService{
 		repository,
 	}

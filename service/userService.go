@@ -3,7 +3,7 @@ package service
 import (
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 )
 
 type UserService interface {
@@ -15,7 +15,7 @@ type UserService interface {
 }
 
 type userService struct {
-	userRepository respository.UserRepository
+	userRepository repository.UserRepository
 }
 
 func (u userService) GetUserButtonList(userID int64) []string {
@@ -59,7 +59,7 @@ func (u userService) Profile(userID string) entity.User {
 	return user
 }
 
-func NewUserService(userRepository respository.UserRepository) UserService {
+func NewUserService(userRepository repository.UserRepository) UserService {
 	return  &userService{
 		userRepository,
 	}

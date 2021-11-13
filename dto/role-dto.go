@@ -16,7 +16,6 @@ type RoleUpdateDTO struct {
 type RolePermissionUpdateDTO struct {
 	ID       uint64 `json:"id" form:"id" binding:"required"`
 	Permission string `json:"permission" binding:"min=0,max=2000"`
-	MenuJson string `json:"menu_json"  binding:"min=0,max=2000"`
 }
 
 type RoleSearchParam struct {

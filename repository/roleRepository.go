@@ -1,12 +1,9 @@
-package respository
+package repository
 
 import (
-	"encoding/json"
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/helper"
 	"gorm.io/gorm"
-	"strings"
 )
 
 type RoleRepository interface {
@@ -25,33 +22,33 @@ type roleRepository struct {
 
 func (r roleRepository) SetPermission(permission dto.RolePermissionUpdateDTO) error {
 
-	var permissionList = []entity.Menu{}
+	//var permissionList = []entity.Menu{}
 
-	MenuJsonSlice:=strings.Split(permission.MenuJson,",")
+	//MenuJsonSlice:=strings.Split(permission.MenuJson,",")
+	//
+	////r.roleConnection.Where("type = ? ",1).Where("id in ?",MenuJsonSlice).Find(&menuList)
+	//r.roleConnection.Where("id in ?",MenuJsonSlice).Find(&permissionList)
+	//
+	//var buttonList = []string{}
+	//var menuList = []entity.Menu{}
+	//
+	//if len(permissionList) > 0 {
+	//	for _,item := range permissionList{
+	//		if item.Type == 1 {
+	//			menuList = append(menuList,item)
+	//		}else if item.Type == 2 {
+	//			buttonList = append(buttonList,item.Code)
+	//		}
+	//	}
+	//}
 
-	//r.roleConnection.Where("type = ? ",1).Where("id in ?",MenuJsonSlice).Find(&menuList)
-	r.roleConnection.Where("id in ?",MenuJsonSlice).Find(&permissionList)
-
-	var buttonList = []string{}
-	var menuList = []entity.Menu{}
-
-	if len(permissionList) > 0 {
-		for _,item := range permissionList{
-			if item.Type == 1 {
-				menuList = append(menuList,item)
-			}else if item.Type == 2 {
-				buttonList = append(buttonList,item.Code)
-			}
-		}
-	}
-
-	menuTreeList:= helper.GetMenuTree(menuList,0)
-
-	marshal, errs := json.Marshal(menuTreeList)
-	if errs != nil {
-		println(errs)
-		return errs
-	}
+	//menuTreeList:= helper.GetMenuTree(menuList,0)
+	//
+	//marshal, errs := json.Marshal(menuTreeList)
+	//if errs != nil {
+	//	println(errs)
+	//	return errs
+	//}
 	//fmt.Println("json:",string(marshal))
 	//dd:= []dto.MenuTree{}
 	//errs := json.Unmarshal([]byte(marshal),&dd)
@@ -67,8 +64,8 @@ func (r roleRepository) SetPermission(permission dto.RolePermissionUpdateDTO) er
 	role.ID = uint(permission.ID)
 	err:= r.roleConnection.Model(&role).UpdateColumns(entity.Role{
 		Permission: permission.Permission,
-		MenuJson: string(marshal),
-		ButtonString: strings.Join(buttonList, ","),
+		//MenuJson: string(marshal),
+		//ButtonString: strings.Join(buttonList, ","),
 	}).Error
 
 	return err

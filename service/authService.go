@@ -5,7 +5,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"golang_api/dto"
 	"golang_api/entity"
-	"golang_api/respository"
+	"golang_api/repository"
 	"log"
 )
 
@@ -17,7 +17,7 @@ type AuthService interface {
 }
 
 type authService struct {
-	userRepository respository.UserRepository
+	userRepository repository.UserRepository
 }
 
 func (a authService) VerifyCredential(email string, password string) interface{} {
@@ -56,7 +56,7 @@ func (a authService) IsDuplicateEmail(email string) bool {
 	return !(res.Error == nil)
 }
 
-func NewAuthService(userRep respository.UserRepository) AuthService {
+func NewAuthService(userRep repository.UserRepository) AuthService {
 	return &authService{
 		userRepository: userRep,
 	}
