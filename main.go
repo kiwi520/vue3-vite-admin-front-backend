@@ -133,6 +133,8 @@ func main()  {
 	appVersionRoutes := r.Group("api/appVersion",middleware.AuthorizeJwt(jwtService))
 	{
 		appVersionRoutes.POST("/list", appVersionController.SearchList)
+		appVersionRoutes.POST("/uploadChunk", appVersionController.SaveChunk)
+		appVersionRoutes.POST("/mergeChunk", appVersionController.MergeChunk)
 		appVersionRoutes.POST("/", appVersionController.Insert)
 		appVersionRoutes.PUT("/", appVersionController.Update)
 		appVersionRoutes.DELETE("/", roleController.Delete)

@@ -3,6 +3,7 @@ package helper
 import (
 	"golang_api/dto"
 	"golang_api/entity"
+	"os"
 )
 
 type Response struct {
@@ -71,4 +72,16 @@ func MakeKeysInInSlice(haystack []string) func(needle string) bool {
 		_,ok := set[needle]
 		return ok
 	}
+}
+
+// 判断path是否存在
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }

@@ -21,6 +21,7 @@ type appVersionService struct {
 func (a appVersionService) Insert(app dto.AppVersionCreateDTO) entity.AppVersion {
 	appToCreate := entity.AppVersion{}
 	appToCreate.Name =app.Name
+	appToCreate.FilePath =app.FilePath
 	appToCreate.Platform =app.Platform
 	appToCreate.State =app.State
 	appToCreate.Remark =app.Remark
@@ -35,6 +36,7 @@ func (a appVersionService) Update(app dto.AppVersionUpdateDTO) entity.AppVersion
 
 	appToUpdate.ID = uint(app.ID)
 	appToUpdate.Name =app.Name
+	appToUpdate.FilePath =app.FilePath
 	appToUpdate.Platform =app.Platform
 	appToUpdate.State =app.State
 	appToUpdate.Remark =app.Remark

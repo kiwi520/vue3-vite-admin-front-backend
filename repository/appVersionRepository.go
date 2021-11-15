@@ -32,7 +32,7 @@ func (a appVersionRepository) UpdateAppVersion(app entity.AppVersion) entity.App
 	println(app.State)
 	println(app.Remark)
 	println("role")
-	err := a.appConnect.Model(&app).Select("*").Omit("id","CreatedAt").Updates(map[string]interface{}{"name": app.Name, "version": app.Version, "platform": app.Platform, "state": app.State, "remark": app.Remark}).Error
+	err := a.appConnect.Model(&app).Select("*").Omit("id","CreatedAt").Updates(map[string]interface{}{"name": app.Name,"file_path": app.FilePath, "version": app.Version, "platform": app.Platform, "state": app.State, "remark": app.Remark}).Error
 
 	if err != nil{
 		println("err.Error()")
