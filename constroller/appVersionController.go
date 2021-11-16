@@ -23,11 +23,32 @@ type AppVersionController interface {
 	SearchList(ctx *gin.Context)
 	List(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	DeleteAppApk(ctx *gin.Context)
 }
 
 type appVersionController struct {
 	jwtService service.JwtService
 	appVersionService service.AppVersionService
+}
+
+func (a appVersionController) DeleteAppApk(ctx *gin.Context) {
+
+	var appDeleteAppApk dto.DeleteAppApk
+	errDTO := ctx.ShouldBind(&appDeleteAppApk)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("请求参数有误", errDTO)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := a.appVersionService.DeleteAppApk(appDeleteAppApk)
+	if err != nil {
+		res := helper.BuildErrorResponse("删除失败", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	res := helper.BuildResponse(http.StatusOK, "删除成功", dto.DeleteAppApk{})
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (a appVersionController) MergeChunk(ctx *gin.Context) {
@@ -113,7 +134,7 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 			return
 		}
 
-		err = os.RemoveAll(hasPath + "/" + file.Name())
+		err = os.Remove(hasPath + "/" + file.Name())
 
 		if err != nil{
 			res := helper.BuildErrorResponse("删除hasPath目录失败", err)
@@ -132,10 +153,15 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 
 	type Res struct {
 		FileUrl string `json:"file_url"`
+		FileName string `json:"file_name"`
+		Flag bool `json:"flag"`
 	}
 
 	res := helper.BuildResponse(http.StatusOK, "合并成功", Res{
 		FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
+		FileName: appVersionMergeChunk.FileName,
+		Flag:false,
+
 	})
 	ctx.JSON(http.StatusOK, res)
 	return

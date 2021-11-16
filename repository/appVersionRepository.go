@@ -1,21 +1,47 @@
 package repository
 
 import (
+	"fmt"
 	"golang_api/dto"
 	"golang_api/entity"
 	"gorm.io/gorm"
+	"os"
+	"regexp"
 )
 
 type AppVersionRepository interface {
 	InsertAppVersion(app entity.AppVersion) entity.AppVersion
 	UpdateAppVersion(app entity.AppVersion) entity.AppVersion
 	DeleteAppVersion(app entity.AppVersion)
+	DeleteAppApk(app dto.DeleteAppApk) error
 	AppVersionSearchList(search dto.AppVersionSearchParam) dto.AppVersionSearchList
 	AppVersionList() []entity.AppVersion
 }
 
 type appVersionRepository struct {
 	appConnect *gorm.DB
+}
+
+func (a appVersionRepository) DeleteAppApk(app dto.DeleteAppApk) (err error) {
+	var appVersion entity.AppVersion
+
+	if app.Flag {
+		appVersion.ID = uint(app.ID)
+		err = a.appConnect.Model(&appVersion).UpdateColumn("file_path", "").Error
+
+		if err != nil {
+			return err
+		}
+	}
+
+	err = os.Remove(app.FilePath)
+
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (a appVersionRepository) InsertAppVersion(app entity.AppVersion) entity.AppVersion {
@@ -30,6 +56,7 @@ func (a appVersionRepository) UpdateAppVersion(app entity.AppVersion) entity.App
 	println(app.Name)
 	println(app.Platform)
 	println(app.State)
+	println(app.Version)
 	println(app.Remark)
 	println("role")
 	err := a.appConnect.Model(&app).Select("*").Omit("id","CreatedAt").Updates(map[string]interface{}{"name": app.Name,"file_path": app.FilePath, "version": app.Version, "platform": app.Platform, "state": app.State, "remark": app.Remark}).Error
@@ -45,6 +72,29 @@ func (a appVersionRepository) UpdateAppVersion(app entity.AppVersion) entity.App
 }
 
 func (a appVersionRepository) DeleteAppVersion(app entity.AppVersion) {
+
+	var appVersion entity.AppVersion
+	a.appConnect.Model(&app).Find(&appVersion)
+
+	if appVersion.FilePath != "" {
+		re := regexp.MustCompile(":8080/")
+		match := re.FindIndex([]byte(appVersion.FilePath))
+		fmt.Println(match)
+		if len(match) == 0 {
+			fmt.Println("没有匹配的ptah，文件路径有问题")
+		}
+		content := appVersion.FilePath[match[1] : len(appVersion.FilePath)]
+		fmt.Println(content)
+
+		err := os.Remove(fmt.Sprintf("./%s",content))
+
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+
+
 	a.appConnect.Unscoped().Delete(&app)
 }
 

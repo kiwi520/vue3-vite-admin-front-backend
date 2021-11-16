@@ -137,7 +137,8 @@ func main()  {
 		appVersionRoutes.POST("/mergeChunk", appVersionController.MergeChunk)
 		appVersionRoutes.POST("/", appVersionController.Insert)
 		appVersionRoutes.PUT("/", appVersionController.Update)
-		appVersionRoutes.DELETE("/", roleController.Delete)
+		appVersionRoutes.DELETE("/", appVersionController.Delete)
+		appVersionRoutes.DELETE("/deleteAppApk", appVersionController.DeleteAppApk)
 	}
 
 
