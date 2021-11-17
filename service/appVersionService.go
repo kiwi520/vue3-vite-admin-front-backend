@@ -1,18 +1,17 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"golang_api/dto"
 	"golang_api/entity"
 	"golang_api/repository"
-	"regexp"
 )
 
 type AppVersionService interface {
 	Insert(app dto.AppVersionCreateDTO) entity.AppVersion
 	Update(app dto.AppVersionUpdateDTO) entity.AppVersion
 	Delete(app entity.AppVersion)
+	DownloadAppVersionFile(app entity.AppVersion) string
 	DeleteAppApk(app dto.DeleteAppApk) error
 	SearchList(search dto.AppVersionSearchParam) dto.AppVersionSearchList
 	List() []entity.AppVersion
@@ -22,24 +21,34 @@ type appVersionService struct {
 	repository repository.AppVersionRepository
 }
 
+func (a appVersionService) DownloadAppVersionFile(app entity.AppVersion) string {
+	return  a.repository.DownloadAppVersionFile(app)
+}
+
 func (a appVersionService) DeleteAppApk(app dto.DeleteAppApk) error {
 	fmt.Println("app")
 	fmt.Println(app)
 	fmt.Println("app")
 
-	re := regexp.MustCompile(":8080/")
-	match := re.FindIndex([]byte(app.FilePath))
-	fmt.Println(match)
-	if len(match) == 0 {
-		fmt.Println("没有匹配的ptah，文件路径有问题")
-		return errors.New("没有匹配的ptah，文件路径有问题")
-	}
-	content := app.FilePath[match[1] : len(app.FilePath)]
-	fmt.Println(content)
+	//re := regexp.MustCompile(":8080/")
+	//match := re.FindIndex([]byte(app.FilePath))
+	//fmt.Println(match)
+	//if len(match) == 0 {
+	//	fmt.Println("没有匹配的ptah，文件路径有问题")
+	//	return errors.New("没有匹配的ptah，文件路径有问题")
+	//}
+	//content := app.FilePath[match[1] : len(app.FilePath)]
+	//fmt.Println(content)
+	//
+	////app.FilePath = "./"+content
+	//app.FilePath = fmt.Sprintf("./%s",content)
 
-	//app.FilePath = "./"+content
-	app.FilePath = fmt.Sprintf("./%s",content)
-	err:= a.repository.DeleteAppApk(app)
+	//name, err := helper.GetFileName(app.FilePath, ":8080/")
+	//if err != nil {
+	//	return err
+	//}
+	//app.FilePath = fmt.Sprintf("./%s",name)
+	err := a.repository.DeleteAppApk(app)
 
 	return err
 }

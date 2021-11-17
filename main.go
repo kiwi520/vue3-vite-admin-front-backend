@@ -135,6 +135,7 @@ func main()  {
 		appVersionRoutes.POST("/list", appVersionController.SearchList)
 		appVersionRoutes.POST("/uploadChunk", appVersionController.SaveChunk)
 		appVersionRoutes.POST("/mergeChunk", appVersionController.MergeChunk)
+		appVersionRoutes.GET("/downloadAppVersionFile", appVersionController.DownloadAppVersionFile)
 		appVersionRoutes.POST("/", appVersionController.Insert)
 		appVersionRoutes.PUT("/", appVersionController.Update)
 		appVersionRoutes.DELETE("/", appVersionController.Delete)

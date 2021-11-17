@@ -24,6 +24,7 @@ type AppVersionController interface {
 	List(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 	DeleteAppApk(ctx *gin.Context)
+	DownloadAppVersionFile(ctx *gin.Context)
 }
 
 type appVersionController struct {
@@ -158,7 +159,8 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 	}
 
 	res := helper.BuildResponse(http.StatusOK, "合并成功", Res{
-		FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
+		//FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
+		FileUrl: fmt.Sprintf("./uploadFile/%s",appVersionMergeChunk.FileName),
 		FileName: appVersionMergeChunk.FileName,
 		Flag:false,
 
@@ -292,6 +294,61 @@ func (a appVersionController) Delete(ctx *gin.Context) {
 	res := helper.BuildResponse(http.StatusOK, "删除成功", []string{})
 	ctx.JSON(http.StatusOK, res)
 	return
+}
+
+//TODO 文件下载
+func (a appVersionController) DownloadAppVersionFile(c *gin.Context) {
+	var app entity.AppVersion
+	id, errDTO := strconv.ParseUint(c.DefaultQuery("id", "0"), 0, 0)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("请求参数有误", errDTO)
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	app.ID = uint(id)
+
+	println("app")
+	println(app.ID)
+	println("app")
+
+	filePath :=a.appVersionService.DownloadAppVersionFile(app)
+
+	if filePath == "" {
+		res := helper.BuildErrorResponse("没有附件文件", errDTO)
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	//打开文件
+	//_, errByOpenFile := os.Open(fileDir + "/" + fileName)
+	//非空处理
+
+	fileName, err := helper.GetFileName(filePath, "/uploadFile/")
+	if err != nil {
+		res := helper.BuildErrorResponse("获取文件名失败", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	fmt.Println("fileName")
+	fmt.Println(fileName)
+	fmt.Println(filePath)
+	fmt.Println("fileName")
+
+	c.Header("Content-Type", "application/octet-stream")
+	c.Header("Content-Disposition", "attachment; filename="+fileName)
+	//浏览器下载或预览
+	c.Header("Content-Disposition", "inline;filename="+fileName)
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Cache-Control", "no-cache")
+	c.File(filePath)
+
+	//c.FileAttachment("./uploadFile/Firefox_90.0.2.dmg",fileName)
+	return
+
+	//res := helper.BuildResponse(http.StatusOK, "获取成功", filePath)
+	//c.JSON(http.StatusOK, res)
+	//return
 }
 
 func NewAppVersionController(	jwtService service.JwtService,appVersionService service.AppVersionService) AppVersionController {

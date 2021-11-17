@@ -6,7 +6,6 @@ import (
 	"golang_api/entity"
 	"gorm.io/gorm"
 	"os"
-	"regexp"
 )
 
 type AppVersionRepository interface {
@@ -14,12 +13,18 @@ type AppVersionRepository interface {
 	UpdateAppVersion(app entity.AppVersion) entity.AppVersion
 	DeleteAppVersion(app entity.AppVersion)
 	DeleteAppApk(app dto.DeleteAppApk) error
+	DownloadAppVersionFile(app entity.AppVersion) string
 	AppVersionSearchList(search dto.AppVersionSearchParam) dto.AppVersionSearchList
 	AppVersionList() []entity.AppVersion
 }
 
 type appVersionRepository struct {
 	appConnect *gorm.DB
+}
+
+func (a appVersionRepository) DownloadAppVersionFile(app entity.AppVersion) string {
+	a.appConnect.Find(&app)
+	return app.FilePath
 }
 
 func (a appVersionRepository) DeleteAppApk(app dto.DeleteAppApk) (err error) {
@@ -77,16 +82,17 @@ func (a appVersionRepository) DeleteAppVersion(app entity.AppVersion) {
 	a.appConnect.Model(&app).Find(&appVersion)
 
 	if appVersion.FilePath != "" {
-		re := regexp.MustCompile(":8080/")
-		match := re.FindIndex([]byte(appVersion.FilePath))
-		fmt.Println(match)
-		if len(match) == 0 {
-			fmt.Println("没有匹配的ptah，文件路径有问题")
-		}
-		content := appVersion.FilePath[match[1] : len(appVersion.FilePath)]
-		fmt.Println(content)
+		//re := regexp.MustCompile(":8080/")
+		//match := re.FindIndex([]byte(appVersion.FilePath))
+		//fmt.Println(match)
+		//if len(match) == 0 {
+		//	fmt.Println("没有匹配的ptah，文件路径有问题")
+		//}
+		//content := appVersion.FilePath[match[1] : len(appVersion.FilePath)]
+		//fmt.Println(content)
 
-		err := os.Remove(fmt.Sprintf("./%s",content))
+		//err := os.Remove(fmt.Sprintf("./%s",content))
+		err := os.Remove(fmt.Sprintf(appVersion.FilePath))
 
 
 		if err != nil {
@@ -128,6 +134,9 @@ func (a appVersionRepository) AppVersionList() (data []entity.AppVersion) {
 	a.appConnect.Find(&data)
 	return data
 }
+
+
+
 
 func NewAppVersionRepository(db *gorm.DB)  AppVersionRepository{
 	return &appVersionRepository{
