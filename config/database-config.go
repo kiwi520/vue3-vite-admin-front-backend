@@ -36,6 +36,8 @@ func SetupDatabaseConnection() *gorm.DB {
 		&entity.Role{},
 		&entity.Menu{},
 		&entity.AppVersion{},
+		&entity.Category{},
+		&entity.Article{},
 		)
 
 	return db

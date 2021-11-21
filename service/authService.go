@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/mashingan/smapping"
 	"golang.org/x/crypto/bcrypt"
 	"golang_api/dto"
@@ -22,6 +23,9 @@ type authService struct {
 
 func (a authService) VerifyCredential(email string, password string) interface{} {
 	res := a.userRepository.VerifyCredential(email, password)
+	fmt.Println(res)
+	fmt.Println(res)
+	fmt.Println(res)
 	if v, ok := res.(entity.User); ok {
 		comparePassword := CheckPasswordHash(password, v.Password)
 
