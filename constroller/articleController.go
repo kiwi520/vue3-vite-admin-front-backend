@@ -27,14 +27,14 @@ type articleController struct {
 }
 
 func (a articleController) SaveImg(ctx *gin.Context) {
-	file, _ := ctx.FormFile("img")
+	file, _ := ctx.FormFile("file")
 
 	fmt.Println("file")
-	fmt.Println(file)
+	fmt.Println(file.Filename)
 	fmt.Println("file")
 
 
-	isExistPath, err := helper.PathExists("./uploadFile/images/")
+	isExistPath, err := helper.PathExists(os.Getenv("Article_Img_Path"))
 
 	if err != nil {
 		fmt.Println("获取hash路径失败",err.Error())
@@ -47,16 +47,20 @@ func (a articleController) SaveImg(ctx *gin.Context) {
 		}
 	}
 
-	err = ctx.SaveUploadedFile(file, fmt.Sprintf("./uploadFile/images/%s", file))
+	err = ctx.SaveUploadedFile(file, fmt.Sprintf(os.Getenv("Article_Img_Path")+"/%s", file.Filename))
 	if err != nil {
 		res := helper.BuildErrorResponse("保存失败", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
 	}else{
 		type Res struct {
+			ImgPath string `json:"img_path"`
 		}
 
-		res := helper.BuildResponse(http.StatusOK, "添加成功", Res{})
+		imgPath := fmt.Sprintf("%s/%s/%s",os.Getenv("Article_Img_Path_Host"),os.Getenv("Article_Img_Path"),file.Filename)
+		res := helper.BuildResponse(http.StatusOK, "添加成功", Res{
+			ImgPath: imgPath,
+		})
 		ctx.JSON(http.StatusOK, res)
 	}
 }

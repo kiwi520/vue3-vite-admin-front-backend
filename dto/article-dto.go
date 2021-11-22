@@ -15,7 +15,7 @@ type ArticleUpdateDTO struct {
 type ArticleCreateDTO struct {
 	Title string `json:"title" form:"title" binding:"required"`
 	CategoryID uint `json:"category_id" form:"category_id" binding:"required"`
-	Recommend uint `json:"recommend" form:"recommend" binding:"required,oneof=1 0 "`
+	Recommend uint `json:"recommend" form:"recommend" binding:"oneof=1 0 "`
 	Content string `json:"content" binding:"min=10" `
 	Remark string `json:"remark" binding:"min=0,max=255" `
 	ImgPath string `json:"img_path" binding:"min=0,max=255" `
@@ -23,7 +23,7 @@ type ArticleCreateDTO struct {
 
 
 type ArticleSearchParam struct {
-	Name string `json:"name"`
+	Title string `json:"title"`
 	CategoryID uint `json:"category_id" form:"category_id"`
 	PageIndex uint `json:"page_index" binding:"required"`
 	PageSize uint `json:"page_size" binding:"required"`

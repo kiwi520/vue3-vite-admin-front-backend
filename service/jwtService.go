@@ -80,7 +80,7 @@ func (j *jwtService) RefreshToken() {
 
 func NewJwtService() JwtService {
 	return &jwtService{
-		issuer:    "sdfdsfsfs",
+		issuer:    os.Getenv("JWT_SECRET"),
 		secretKey: getSecretKey(),
 	}
 }

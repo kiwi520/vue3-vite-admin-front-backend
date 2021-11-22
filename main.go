@@ -8,6 +8,7 @@ import (
 func main()  {
 
 	r,db := router.RouteMap()
+	r.Static("/static","./static")
 	defer config.CloseDatabaseConnection(db)
 	err := r.Run()
 	if err != nil {

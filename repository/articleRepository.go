@@ -45,8 +45,8 @@ func (a articleRepository) Delete(article entity.Article) {
 
 func (a articleRepository) SearchList(search dto.ArticleSearchParam) (data dto.ArticleSearchList) {
 	departDb:= a.articleConnect.Model(&entity.Article{})
-	if search.Name != "" {
-		departDb.Where("name LIKE ? ", "%"+search.Name+"%")
+	if search.Title != "" {
+		departDb.Where("title LIKE ? ", "%"+search.Title+"%")
 	}
 
 	if search.CategoryID > 0 {

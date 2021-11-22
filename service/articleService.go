@@ -25,6 +25,7 @@ func (a articleService) Insert(article dto.ArticleCreateDTO) entity.Article {
 	articleToCreate.ImgPath =article.ImgPath
 	articleToCreate.CategoryID = int64(article.CategoryID)
 	articleToCreate.Recommend = article.Recommend
+	articleToCreate.Content = article.Content
 
 	res := a.articleRepository.Insert(articleToCreate)
 
@@ -39,6 +40,7 @@ func (a articleService) Update(article dto.ArticleUpdateDTO) entity.Article {
 	artileToUpdate.ImgPath =article.ImgPath
 	artileToUpdate.CategoryID = int64(article.CategoryID)
 	artileToUpdate.Recommend = article.Recommend
+	artileToUpdate.Content = article.Content
 
 	res := a.articleRepository.Update(artileToUpdate)
 	return res
