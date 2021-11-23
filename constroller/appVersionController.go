@@ -61,8 +61,8 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 		return
 	}
 
-	hasPath := fmt.Sprintf("./uploadFile/%s/",appVersionMergeChunk.FileHash)
-	hasFile := fmt.Sprintf("./uploadFile/%s",appVersionMergeChunk.FileName)
+	hasPath := fmt.Sprintf("./%s/%s/",os.Getenv("Article_App_Path"),appVersionMergeChunk.FileHash)
+	hasFile := fmt.Sprintf("./%s/%s",os.Getenv("Article_App_Path"),appVersionMergeChunk.FileName)
 
 	isExistPath, err := helper.PathExists(hasPath)
 
@@ -84,7 +84,8 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 		}
 
 		res := helper.BuildResponse(http.StatusOK, "合并成功", Res{
-			FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
+			FileUrl: fmt.Sprintf("%s://%s:%s/%s/%s",helper.GetHttps(),helper.GetLocalIP()[0],os.Getenv("PORT"),os.Getenv("Article_App_Path"),appVersionMergeChunk.FileName),
+			//FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
 		})
 		ctx.JSON(http.StatusOK, res)
 		return
@@ -160,7 +161,7 @@ func (a appVersionController) MergeChunk(ctx *gin.Context) {
 
 	res := helper.BuildResponse(http.StatusOK, "合并成功", Res{
 		//FileUrl: fmt.Sprintf("http://127.0.0.1:8080/uploadFile/%s",appVersionMergeChunk.FileName),
-		FileUrl: fmt.Sprintf("./uploadFile/%s",appVersionMergeChunk.FileName),
+		FileUrl: fmt.Sprintf("./%s/%s",os.Getenv("Article_App_Path"),appVersionMergeChunk.FileName),
 		FileName: appVersionMergeChunk.FileName,
 		Flag:false,
 
@@ -186,7 +187,7 @@ func (a appVersionController) SaveChunk(ctx *gin.Context) {
 	fmt.Println(chunkNumber)
 	fmt.Println("chunkNumber")
 
-	hashPath := fmt.Sprintf("./uploadFile/%s/",fileHash)
+	hashPath := fmt.Sprintf("./%s/%s/",os.Getenv("Article_App_Path"),fileHash)
 
 	isExistPath, err := helper.PathExists(hashPath)
 
@@ -201,7 +202,7 @@ func (a appVersionController) SaveChunk(ctx *gin.Context) {
 		}
 	}
 
-	err = ctx.SaveUploadedFile(file, fmt.Sprintf("./uploadFile/%s/%s", fileHash, chunkHash))
+	err = ctx.SaveUploadedFile(file, fmt.Sprintf("./%s/%s/%s",os.Getenv("Article_App_Path"), fileHash, chunkHash))
 	if err != nil {
 		res := helper.BuildErrorResponse("保存失败", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)

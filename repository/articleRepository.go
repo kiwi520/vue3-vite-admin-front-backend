@@ -3,7 +3,9 @@ package repository
 import (
 	"golang_api/dto"
 	"golang_api/entity"
+	"golang_api/helper"
 	"gorm.io/gorm"
+	"os"
 )
 
 type ArticleRepository interface {
@@ -13,6 +15,7 @@ type ArticleRepository interface {
 	SearchList(search dto.ArticleSearchParam) dto.ArticleSearchList
 	List() []entity.Article
 	FindByID(articleID uint) entity.Article
+	DeleteArticleImg(app dto.DeleteArticleImg) error
 }
 
 type articleRepository struct {
@@ -73,6 +76,32 @@ func (a articleRepository) FindByID(articleID uint) (data entity.Article) {
 	data.ID =articleID
 	a.articleConnect.Find(&data)
 	return data
+}
+
+func (a articleRepository) DeleteArticleImg(app dto.DeleteArticleImg) (err error) {
+	var article entity.Article
+
+	if app.ID > 0 {
+		article.ID = uint(app.ID)
+		err = a.articleConnect.Model(&article).UpdateColumn("img_path", "").Error
+
+		if err != nil {
+			return err
+		}
+	}
+
+	path, err := helper.GetFileName(app.ImgPath, ":"+os.Getenv("PORT")+"/")
+	if err != nil {
+		return err
+	}
+	err = os.Remove(path)
+
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func NewArticleRepository (db *gorm.DB) ArticleRepository {

@@ -19,11 +19,31 @@ type ArticleController interface {
 	Update(ctx *gin.Context)
 	SearchList(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	DeleteArticleImg(ctx *gin.Context)
 }
 
 type articleController struct {
 	jwtService service.JwtService
 	articleService service.ArticleService
+}
+
+func (a articleController) DeleteArticleImg(ctx *gin.Context) {
+	var param dto.DeleteArticleImg
+	errDTO := ctx.ShouldBind(&param)
+	if errDTO != nil {
+		res := helper.BuildErrorResponse("请求参数有误", errDTO)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
+	err := a.articleService.DeleteArticleImg(param)
+	if err != nil {
+		res := helper.BuildErrorResponse("删除失败", err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+	res := helper.BuildResponse(http.StatusOK, "删除成功", dto.DeleteArticleImg{})
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (a articleController) SaveImg(ctx *gin.Context) {
@@ -41,7 +61,7 @@ func (a articleController) SaveImg(ctx *gin.Context) {
 	}
 
 	if !isExistPath {
-		err := os.Mkdir("./uploadFile/images/", os.ModePerm)
+		err := os.Mkdir("./"+os.Getenv("Article_Img_Path"), os.ModePerm)
 		if err != nil {
 			fmt.Println("创建hash路径失败",err.Error())
 		}
@@ -57,7 +77,7 @@ func (a articleController) SaveImg(ctx *gin.Context) {
 			ImgPath string `json:"img_path"`
 		}
 
-		imgPath := fmt.Sprintf("%s/%s/%s",os.Getenv("Article_Img_Path_Host"),os.Getenv("Article_Img_Path"),file.Filename)
+		imgPath := fmt.Sprintf("%s://%s:%s/%s/%s",helper.GetHttps(),helper.GetLocalIP()[0],os.Getenv("PORT"),os.Getenv("Article_Img_Path"),file.Filename)
 		res := helper.BuildResponse(http.StatusOK, "添加成功", Res{
 			ImgPath: imgPath,
 		})

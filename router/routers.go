@@ -152,6 +152,7 @@ func RouteMap() (*gin.Engine, *gorm.DB) {
 		articleRoutes.GET("/:id", articleController.FindByID)
 		articleRoutes.PUT("/", articleController.Update)
 		articleRoutes.DELETE("/", articleController.Delete)
+		articleRoutes.DELETE("/deleteArticleImg", articleController.DeleteArticleImg)
 	}
 
 	return r,db

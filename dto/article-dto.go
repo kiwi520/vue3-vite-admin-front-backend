@@ -29,6 +29,11 @@ type ArticleSearchParam struct {
 	PageSize uint `json:"page_size" binding:"required"`
 }
 
+type DeleteArticleImg struct {
+	ID uint64 `json:"id" form:"id"`
+	ImgPath string `json:"img_path" binding:"required"`
+}
+
 //列表查询response结构
 type ArticleSearchList struct {
 	Count int64 `json:"total"`

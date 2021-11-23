@@ -13,10 +13,17 @@ type ArticleService interface {
 	SearchList(search dto.ArticleSearchParam) dto.ArticleSearchList
 	//GetTreeList(pid uint) []dto.CategoryTree
 	FindById(cateID uint) entity.Article
+	DeleteArticleImg(article dto.DeleteArticleImg) error
 }
 
 type articleService struct {
 	articleRepository repository.ArticleRepository
+}
+
+func (a articleService) DeleteArticleImg(articleImg dto.DeleteArticleImg) error {
+	err := a.articleRepository.DeleteArticleImg(articleImg)
+
+	return err
 }
 
 func (a articleService) Insert(article dto.ArticleCreateDTO) entity.Article {
